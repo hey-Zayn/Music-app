@@ -2,11 +2,12 @@
 // import { Button } from "@/components/ui/button"
 // import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react'
 import { Route, Routes } from 'react-router-dom'
-import HomePage from './pages/HomePage.jsx'
-import AuthCallbackPage from './pages/AuthCallbackPage.jsx'
+import HomePage from './pages/home/HomePage.jsx'
+import ChatPage from './pages/chat/ChatPage.jsx'
+import AuthCallbackPage from './pages/auth-callback/AuthCallbackPage.jsx'
 import { axiosInstance } from './lib/axios.js'
 import { AuthenticateWithRedirectCallback } from '@clerk/clerk-react'
-
+import MainLayout from "../src/components/layout/MainLayout.jsx"
 
 const App = () => {
 
@@ -24,9 +25,13 @@ const App = () => {
       </header> */}
 
       <Routes>
-        <Route path='/' element={<HomePage />} />
         <Route path='/sso-callback' element={<AuthenticateWithRedirectCallback signUpForceRedirectUrl={"/auth-callback"} />} />
         <Route path='/auth-callback' element={<AuthCallbackPage />} />
+        <Route  element={<MainLayout />} >
+        <Route path='/' element={<HomePage />} />
+        <Route path='/chat' element={<ChatPage />} />
+
+        </Route>
       </Routes>
     </>
   )
