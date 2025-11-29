@@ -22,7 +22,7 @@ const NewUser = async (req, res) => {
             user: newUser,
         });
     } catch (error) {
-        console.log(`Error in callback ${error}`);
+        console.log(`Error in callback auth.controller ${error}`);
 
         res.status(500).send('Server Error');
     }
