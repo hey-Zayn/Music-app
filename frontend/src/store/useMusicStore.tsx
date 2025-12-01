@@ -12,6 +12,7 @@ interface MusicStore {
     featuredSongs: Song[],
     madeForYouSongs: Song[],
     trendingSongs: Song[],
+    Single: [],
     stats: Stats,
     isSongsLoading: boolean,
     isStatsLoading: boolean,
@@ -26,6 +27,8 @@ interface MusicStore {
     fetchSongs: () => Promise<void>,
     deleteSong: (id: string) => Promise<void>,
     deleteAlbum: (id: string) => Promise<void>,
+
+    fetchSingleSong: () => Promise<void>,
 }
 
 
@@ -39,6 +42,7 @@ export const useMusicStore = create<MusicStore>((set) => ({
     featuredSongs: [],
     madeForYouSongs: [],
     trendingSongs: [],
+    Single: [],
     stats: {
         totalSongs: 0,
         totalAlbums: 0,
@@ -47,6 +51,27 @@ export const useMusicStore = create<MusicStore>((set) => ({
     },
     isSongsLoading: false,
     isStatsLoading: false,
+
+   fetchSingleSong: async () => {
+    set({ isLoading: true, error: null });
+    try {
+        const response = await axiosInstance.get('/songs/single');
+        
+        if (response.data.success && response.data.songs) {
+            set({ Single: response.data.songs });
+            console.log('Single song fetched successfully:', response.data.songs);
+        } else {
+            throw new Error(response.data.message || 'Invalid response format');
+        }
+    } catch (error:any) {
+        console.error("Error in fetchSingleSong:", error);
+        const errorMessage = error.response?.data?.message || error.message || "Failed to fetch song";
+        set({ error: errorMessage });
+        toast.error(errorMessage);
+    } finally {
+        set({ isLoading: false });
+    }
+},
 
     deleteSong: async (id) => {
         set({ isLoading: true, error: null });
@@ -104,7 +129,7 @@ export const useMusicStore = create<MusicStore>((set) => ({
             const response = await axiosInstance.get("/stats");
             set({ stats: response.data });
             console.log(response);
-            
+
         } catch (error: any) {
             set({ error: error.message });
         } finally {

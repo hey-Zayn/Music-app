@@ -9,21 +9,28 @@ import LeftSidebar from './components/LeftSidebar'
 import FriendsActivity from './components/FriendsActivity'
 import AuidoPlayer from './components/AuidoPlayer'
 import PlaybackControls from './components/PlaybackControls'
+import TopHeader from './components/TopHeader'
+import Topbar from '../ui/Topbar'
 
 const MainLayout = () => {
- const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-	useEffect(() => {
-		const checkMobile = () => {
-			setIsMobile(window.innerWidth < 768);
-		};
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
 
-		checkMobile();
-		window.addEventListener("resize", checkMobile);
-		return () => window.removeEventListener("resize", checkMobile);
-	}, []);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+
   return (
-    <div className='h-screen flex flex-col overflow-hidden'>
+    <div className='h-screen flex flex-col overflow-hidden bg-black'>
+      <TopHeader />
+      {/* <Topbar /> */}
+
       <ResizablePanelGroup
         direction="horizontal"
         className="flex-1 flex min-h-0 overflow-hidden p-2" // Changed from min-h-full to min-h-0
