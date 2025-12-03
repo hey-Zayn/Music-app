@@ -52,7 +52,7 @@ export const useChatStore = create<chatStore>((set, get) => ({
 
             })
         } catch (error) {
-            set({ error: error.response.data.message })
+            set({ error: error.response?.data?.message || error.message || 'Error fetching users' })
         } finally {
             set({ isLoading: false })
         }
@@ -63,6 +63,9 @@ export const useChatStore = create<chatStore>((set, get) => ({
 
             socket.connect();
             socket.emit("user_connected", userId);
+
+            // store socket instance in state so other actions can use it
+            set({ socket });
 
             socket.on("user_online", (users: string[]) => {
                 set({ onlineUsers: new Set(users) })
@@ -112,23 +115,24 @@ export const useChatStore = create<chatStore>((set, get) => ({
     disconnectSocket: () => {
         if (get().isConnected) {
             socket.disconnect();
-            set({ isConnected: false })
+            set({ isConnected: false, socket: null })
         }
     },
     sendMessge: (receiverId, senderId, content) => {
-        const socket = get().socket;
-        if (!socket) return;
+        // prefer using the stored socket instance
+        const sock = get().socket || socket;
+        if (!sock) return;
 
-        socket.emit('send_message', { receiverId, senderId, content });
+        sock.emit('send_message', { receiverId, senderId, content });
     },
 
     fetchMessages: async (userId: string) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axiosInstance.get(`/users/messages/${userId}`);
+            const response = await axiosInstance.get(`/users/message/${userId}`);
             set({ messages: response.data })
         } catch (error: any) {
-            set({ error: error.response.data.message })
+            set({ error: error.response?.data?.message || error.message || 'Error fetching messages' })
         } finally {
             set({ isLoading: false });
         }
