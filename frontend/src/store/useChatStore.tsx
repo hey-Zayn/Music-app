@@ -22,7 +22,9 @@ interface chatStore {
     setSelectedUser: (user: User | null) => void;
 }
 
-const baseURL = import.meta.env.MODE === "development" ? "https://music-bd.vercel.app/api" : "/api";
+// const baseURL = import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
+// const baseURL = import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
+const baseURL = "https://music-bd.vercel.app";
 const socket = io(baseURL, {
     autoConnect: false,
     withCredentials: true,
