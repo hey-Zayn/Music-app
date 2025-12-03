@@ -15,16 +15,14 @@ const NewUser = async (req, res) => {
         });
 
         await newUser.save();
-
-        res.status(201).status(201).json({
-            success: true,
-            message: `User ${fullName.firstName} ${lastName} created successfully`,
-            user: newUser,
-        });
+            res.status(201).json({
+                success: true,
+                message: `User ${firstName} ${lastName} created successfully`,
+                user: newUser,
+            });
     } catch (error) {
-        console.log(`Error in callback auth.controller ${error}`);
-
-        res.status(500).send('Server Error');
+            console.error('Error in callback auth.controller:', error?.message || error);
+            res.status(500).json({ success: false, message: 'Server Error' });
     }
 }
 
