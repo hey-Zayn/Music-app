@@ -1,4 +1,6 @@
 import { usePlayerStore } from '@/store/usePlayerStore';
+import { useChatStore } from '@/store/useChatStore';
+import { useUser } from '@clerk/clerk-react';
 import React, { useEffect, useRef } from 'react'
 
 const AudioPlayer = () => {
@@ -6,6 +8,8 @@ const AudioPlayer = () => {
     const prevSongRef = useRef<string | null>(null);
 
     const { currentSong, isPlaying, playNext, playPrevious, repeatMode } = usePlayerStore()
+    const { socket } = useChatStore();
+    const { user } = useUser();
 
     // Handle play/pause logic
     useEffect(() => {
@@ -65,13 +69,19 @@ const AudioPlayer = () => {
 
     }, [currentSong, isPlaying]);
 
-    // Handle repeat mode changes to update audio loop property
+    // Emit activity update when song changes or play/pause state changes
     useEffect(() => {
-        if (audioRef.current) {
-            // Set loop property for repeat one mode (HTML5 native looping)
-            audioRef.current.loop = repeatMode === 'one';
+        if (!socket || !user) return;
+
+        if (currentSong && isPlaying) {
+            const activityMessage = `Playing ${currentSong.title} by ${currentSong.artist}`;
+            console.log('Emitting activity:', activityMessage);
+            socket.emit('update_activity', { userId: user.id, activity: activityMessage });
+        } else if (!isPlaying || !currentSong) {
+            console.log('Emitting idle activity');
+            socket.emit('update_activity', { userId: user.id, activity: 'Idle' });
         }
-    }, [repeatMode]);
+    }, [currentSong, isPlaying, socket, user]);
 
     return (
         <audio 

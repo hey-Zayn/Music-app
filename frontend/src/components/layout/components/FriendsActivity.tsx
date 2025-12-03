@@ -7,6 +7,10 @@ import { useEffect } from "react";
 
 const FriendsActivity = () => {
 	const { users, fetchUsers, onlineUsers, userActivities } = useChatStore();
+  console.log('FriendsActivity - users:', users);
+  console.log('FriendsActivity - userActivities:', userActivities);
+  console.log('FriendsActivity - onlineUsers:', onlineUsers);
+  
 	const { user } = useUser();
 
 	useEffect(() => {

@@ -4,7 +4,7 @@ import type { Message, User } from "@/types";
 import { io } from 'socket.io-client';
 
 interface chatStore {
-    users: any[],
+    users: User[];
     isLoading: boolean,
     error: string | null,
     socket: any,
@@ -22,7 +22,7 @@ interface chatStore {
     setSelectedUser: (user: User | null) => void;
 }
 
-const baseURL = `http://localhost:5000`
+const baseURL = import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
 const socket = io(baseURL, {
     autoConnect: false,
     withCredentials: true,
@@ -102,9 +102,11 @@ export const useChatStore = create<chatStore>((set, get) => ({
             });
 
             socket.on("activity_updated", ({ userId, activity }) => {
+                console.log('Activity updated:', { userId, activity });
                 set((state) => {
                     const newActivities = new Map(state.userActivities);
                     newActivities.set(userId, activity);
+                    console.log('New activities map:', Array.from(newActivities.entries()));
                     return { userActivities: newActivities };
                 });
             });
@@ -131,8 +133,16 @@ export const useChatStore = create<chatStore>((set, get) => ({
         try {
             const response = await axiosInstance.get(`/users/message/${userId}`);
             set({ messages: response.data })
-        } catch (error: any) {
-            set({ error: error.response?.data?.message || error.message || 'Error fetching messages' })
+        } catch (error) {
+            let message = 'Error fetching messages';
+            try {
+                const e = JSON.parse(JSON.stringify(error));
+                if (e?.response?.data?.message) message = e.response.data.message;
+                else if (e?.message) message = e.message;
+            } catch {
+                // keep generic message
+            }
+            set({ error: message })
         } finally {
             set({ isLoading: false });
         }

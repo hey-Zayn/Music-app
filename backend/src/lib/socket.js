@@ -29,6 +29,7 @@ const initializeSocket = (server) => {
             console.log("activity updated", userId, activity);
 
             userActivities.set(userId, activity);
+            console.log('Broadcasting activities update to all clients');
             io.emit("activity_updated", { userId, activity });
         });
 

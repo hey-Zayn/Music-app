@@ -19,16 +19,16 @@ const getAllUser = async (req, res, next) => {
 const getMessage = async (req, res, next) => {
     try {
         const myId = req.auth.userId;
-		const { userId } = req.params;
+        const { userId } = req.params;
 
-		const messages = await Message.find({
-			$or: [
-				{ senderId: userId, receiverId: myId },
-				{ senderId: myId, receiverId: userId },
-			],
-		}).sort({ createdAt: 1 });
+        const messages = await Message.find({
+            $or: [
+                { senderId: userId, receiverId: myId },
+                { senderId: myId, receiverId: userId },
+            ],
+        }).sort({ createdAt: 1 });
 
-		res.status(200).json(messages);
+        res.status(200).json(messages);
     } catch (err) {
         next(err)
     }
