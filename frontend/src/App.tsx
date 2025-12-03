@@ -16,7 +16,7 @@ const App = () => {
 
   return (
     <>
-
+        {/* this main file */}
       <Routes>
         <Route path='/sso-callback' element={<AuthenticateWithRedirectCallback signUpForceRedirectUrl={"/auth-callback"} />} />
         <Route path='/auth-callback' element={<AuthCallbackPage />} />
